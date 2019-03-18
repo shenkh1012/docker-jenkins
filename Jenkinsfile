@@ -31,7 +31,7 @@ pipeline {
 
     stage('Deploy') {
       steps {
-        sh 'chmod -x ./jenkins/scripts/run-app-in-docker.sh'
+        sh 'chmod +x ./jenkins/scripts/run-app-in-docker.sh'
         sh 'sudo ./jenkins/scripts/run-app-in-docker.sh'
       }
     }
