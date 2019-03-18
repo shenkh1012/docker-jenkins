@@ -31,7 +31,7 @@ pipeline {
 
     stage('Deploy') {
       steps {
-        sh 'echo "Building"'
+        sh './jenkins/scripts/run-app-in-docker.sh'
       }
     }
   }
