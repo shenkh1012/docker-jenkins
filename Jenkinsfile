@@ -28,5 +28,11 @@ pipeline {
         }
       }
     }
+
+    stage('Deploy') {
+      steps {
+        sh 'echo "Building"'
+      }
+    }
   }
 }
