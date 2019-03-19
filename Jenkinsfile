@@ -9,8 +9,7 @@ pipeline {
   stages {
     stage('Init') {
       steps {
-        sh '''env.SERVICE_NAME=\'docker-jenkins\'
-'''
+        sh 'env.SERVICE_NAME=\'docker-jenkins\''
       }
     }
     stage('Build') {
