@@ -31,7 +31,7 @@ def showEnvironmentVariables() {
 }
 
 def buildApplication() {
-  withDockerContainer("maven:3.6.0-jdk-8") {
+  withDockerContainer(image: "maven:3.6.0-jdk-8", args: "-v /root/.m2:/root/.m2") {
     sh "mvn clean package"
   }
   archiveArtifacts '**/target/ks-jenkins-docker-0.0.1-SNAPSHOT.jar'
