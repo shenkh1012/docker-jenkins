@@ -19,6 +19,8 @@ pipeline {
       }
 
       steps {
+        sh 'whoami'
+        sh 'pwd'
         sh 'mvn -B -DskipTests clean package spring-boot:repackage'
       }
       
