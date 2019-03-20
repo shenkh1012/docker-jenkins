@@ -43,7 +43,7 @@ def setEnvironmentVariables() {
 }
 
 def buildApplication() {
-  withDockerContainer("maven:3.5.0-jdk-8-alpine") { 
+  withDockerContainer(imnage:'maven:3-alpine', args:'-v /root/.m2:/root/.m2') { 
     sh 'mvn -B clean package'
   }
   archiveArtifacts '**/target/docker-jenkins-0.0.1-SNAPSHOT.jar'
