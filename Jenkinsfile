@@ -55,7 +55,7 @@ pipeline {
 def init() {
   echo 'Initial of pipeline...'
   
-  showEnvironmentVariables()
+  setEnvironmentVariables()
   
   showEnvironmentVariables()
 }
