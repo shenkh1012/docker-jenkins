@@ -11,34 +11,10 @@ pipeline {
     }
 
     stage('Build Application') {
-      agent {
-        docker {
-          image 'maven:3-alpine'
-          args '-v /root/.m2:/root/.m2'
-        }
-      }
+      agent any
 
       steps {
-        sh 'mvn -B -DskipTests clean package'
-      }
-    }
-
-    stage('Test') {
-      agent {
-        docker {
-          image 'maven:3-alpine'
-          args '-v /root/.m2:/root/.m2'
-        }
-      }
-
-      steps {
-        sh 'mvn test'
-      }
-
-      post {
-        always {
-          junit 'target/surefire-reports/*.xml'
-        }
+        buildApplication()
       }
     }
 
@@ -64,6 +40,14 @@ def setEnvironmentVariables() {
   env.SYSTEM_NAME = 'kyle'
   env.APPLICATION_NAME = 'docker-jenkins'
   env.IMAGE_NAME = "${env.SYSTEM_NAME}/${env.APPLICATION_NAME}:" + ((env.BRANCH_NAME == "master") ? "" : "${env.BRANCH_NAME}-") + env.BUILD_ID
+}
+
+def buildApplication() {
+  withDockerContainer("maven:3.5.0-jdk-8-alpine") { 
+    sh 'mvn -B clean package'
+  }
+  archiveArtifacts '**/target/docker-jenkins-0.0.1-SNAPSHOT.jar'
+  step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/TEST-*.xml'] )
 }
 
 def showEnvironmentVariables() {
