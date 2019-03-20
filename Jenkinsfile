@@ -7,6 +7,8 @@ pipeline {
     stage('Init') {
       steps {
         init()
+        sh 'whoami'
+        sh 'pwd'
       }
     }
 
