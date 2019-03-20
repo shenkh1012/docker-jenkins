@@ -7,8 +7,6 @@ pipeline {
     stage('Init') {
       steps {
         init()
-        sh 'whoami'
-        sh 'pwd'
       }
     }
 
@@ -21,8 +19,6 @@ pipeline {
       }
 
       steps {
-        sh 'whoami'
-        sh 'pwd'
         sh 'mvn -B -DskipTests clean package spring-boot:repackage'
       }
       
@@ -64,10 +60,6 @@ pipeline {
 
 def init() {
   echo 'Initial of pipeline...'
-  
-  sh 'docker info'
-
-  sh 'docker version'
   
   setEnvironmentVariables()
   
