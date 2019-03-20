@@ -11,6 +11,7 @@ pipeline {
     }
 
     stage('Build Application') {
+      agent any
       steps {
         buildApplication()
       }
