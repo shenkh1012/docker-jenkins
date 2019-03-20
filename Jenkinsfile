@@ -65,6 +65,14 @@ pipeline {
 def init() {
   echo 'Initial of pipeline...'
   
+  pwd
+  
+  whoami
+  
+  sh 'docker info'
+
+  sh 'docker version'
+  
   setEnvironmentVariables()
   
   showEnvironmentVariables()
