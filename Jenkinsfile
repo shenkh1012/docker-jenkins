@@ -28,12 +28,5 @@ pipeline {
         }
       }
     }
-
-    stage('Deploy') {
-      steps {
-        sh 'chmod +x ./jenkins/scripts/run-app-in-docker.sh'
-        sh './jenkins/scripts/run-app-in-docker.sh'
-      }
-    }
   }
 }
