@@ -1,50 +1,38 @@
+#!groovy
+
 pipeline {
   agent any
 
-  environment {
-    CI = 'true'
-  }
-
   stages {
-    stage('Build') {
-      agent {
-        docker {
-          image 'maven:3-alpine'
-          args '-v /root/.m2:/root/.m2'
-        }
-      }
-      
+    stage('Init') {
       steps {
-        sh 'mvn -B -DskipTests clean package'
+        init()
       }
     }
 
-    stage('Test') {
-      agent {
-        docker {
-          image 'maven:3-alpine'
-          args '-v /root/.m2:/root/.m2'
-        }
-      }
-      
+    stage('Build Application') {
       steps {
-        sh 'mvn test'
-      }
-
-      post {
-        always {
-          junit 'target/surefire-reports/*.xml'
-        }
-      }
-    }
-    
-    stage('Deploy to Docker') {
-      agent any
-      
-      steps {
-        sh 'docker version'
-        sh 'docker info'
+        buildApplication()
       }
     }
   }
+}
+
+def init() {
+  echo 'Initial of pipeline...'
+  showEnvironmentVariables()
+}
+
+def showEnvironmentVariables() {
+  // Print environment variables
+  sh 'env | sort > env.txt'
+  sh 'cat env.txt'
+}
+
+def buildApplication() {
+  withDockerContainer("maven:3.6.0-jdk-8", "-v /root/.m2:/root/.m2") {
+    sh "mvn clean package"
+  }
+  archiveArtifacts '**/target/ks-jenkins-docker-0.0.1-SNAPSHOT.jar'
+  step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/TEST-*.xml'])
 }
