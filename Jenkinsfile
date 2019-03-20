@@ -24,6 +24,13 @@ pipeline {
     }
 
     stage('Test') {
+      agent {
+        docker {
+          image 'maven:3.6.0-jdk-8'
+          args '-v /root/.m2:/root/.m2'
+        }
+      }
+
       steps {
         sh 'mvn test'
       }
