@@ -3,10 +3,12 @@
 pipeline {
   agent any
 
+  def applicationBuilder
+
   stages {
     stage('Init') {
       steps {
-        init()
+        applicationBuilder = new ApplicationBuilder()
       }
     }
 
@@ -19,13 +21,7 @@ pipeline {
       }
 
       steps {
-        sh 'mvn -B -DskipTests clean package spring-boot:repackage'
-      }
-      
-      post {
-        always {
-          archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
-        }
+        applicationBuilder.buildApplication()
       }
     }
     
@@ -38,13 +34,7 @@ pipeline {
       }
 
       steps {
-        sh 'mvn test'
-      }
-
-      post {
-        always {
-          junit 'target/surefire-reports/*.xml'
-        }
+        applicationBuilder.runTests()
       }
     }
 
@@ -52,7 +42,7 @@ pipeline {
       agent any
 
       steps {
-        buildDockerImage()
+        applicationBuilder.runDockerImage()
       }
     }
 
@@ -60,71 +50,121 @@ pipeline {
       agent any
 
       steps {
-        runDockerImage()
+        applicationBuilder.runDockerImage()
       }
     }
   }
 }
 
-def init() {
-  echo 'Initial of pipeline...'
-  
-  setEnvironmentVariables()
-  
-  showEnvironmentVariables()
-}
+class ApplicationBuilder {
+  private String systemName
+  private String applicationName
+  private String branchName
+  private String applicationVersion
+  private String port
+  private String imageName
 
-def setEnvironmentVariables() {
-  env.SYSTEM_NAME = 'kyle'
-  env.APPLICATION_NAME = 'docker-jenkins'
-  env.APPLICATION_VERSION = '0.0.1-SNAPSHOT'
-  env.IMAGE_NAME = "${env.SYSTEM_NAME}/${env.APPLICATION_NAME}:" + ((env.BRANCH_NAME == "master") ? "" : "${env.BRANCH_NAME}-") + env.APPLICATION_VERSION.toLowerCase()
-}
-
-def showEnvironmentVariables() {
-  // Print environment variables
-  sh 'env | sort > env.txt'
-  sh 'cat env.txt'
-}
-
-def buildDockerImage() {
-  sh 'docker version'
-  sh 'docker info'
-
-  stopContainerIfExists()
-
-  // deleteOldImageIfExists()
-
-  docker.build(env.IMAGE_NAME)
-
-  // Clean up dangling images
-  // sh 'docker rmi $(docker images -f "dangling=true" -q)'
-}
-
-def stopContainerIfExists() {
-  def containerId = sh(returnStdout: true, script: "docker ps | grep '${env.IMAGE_NAME}' | awk '{print \$1;}'")
-
-  echo 'Running containerId=' + containerId
-  if (containerId.trim()) {
-    sh 'docker stop ' + containerId
-
-    sleep time: 5, unit: 'SECONDS'
+  ApplicationBuilder() {
+    init()
   }
-}
 
-def deleteOldImageIfExists() {
-  def imageId = sh(returnStdout: true, script: "docker images | grep '${env.IMAGE_NAME}' | awk '{print \$3;}'")
-
-  echo 'Old imageId=' + imageId
-
-  if (imageId.trim()) {
-    sh 'docker rmi ' + imageId
-
-    sleep time: 2, unit: 'SECONDS'
+  /**
+   * Build application
+   */
+  void buildApplication() {
+    // Build application with maven and repackage with spring-boot
+    try {
+      sh 'mvn -B -DskipTests clean package spring-boot:repackage'
+    } finally {
+      archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
+    }
   }
-}
 
+  /**
+   * Run test cases
+   */
+  void runTests() {
+    try {
+      // Run tests with maven.
+      sh 'mvn test'
+    } finally {
+      junit 'target/surefire-reports/*.xml'
+    }
+  }
 
-def runDockerImage() {
-  sh 'docker run -d --rm -p 8001:8080 ' + env.IMAGE_NAME
+  /**
+   * Build docker image
+   */
+  void buildDockerImage() {
+    if (this.branchName == 'master' || this.branchName == 'develop') {
+      sh 'docker version'
+      sh 'docker info'
+
+      stopContainerIfExists()
+
+      // TODO Delete old image files
+
+      docker.build(this.imageName)
+
+      // TODO Clean up dangling images?? (<none>:<none> images)
+      // sh 'docker rmi $(docker images -f "dangling=true" -q)'
+    } else {
+      echo 'Skip build image step for branch: ' + this.branchName
+    }
+  }
+
+  /**
+   * Run docker image
+   */
+  void runDockerImage() {
+    if (this.branchName == 'master' || this.branchName == 'develop') {
+      // -d: Run docker image in deemon
+      // --rm: Auto-remove docker container after stop
+      sh 'docker run -d --rm -p ' + this.port + ':8080 ' + this.imageName
+    } else {
+      echo 'Skip run docker image step for branch: ' + this.branchName
+    }
+  }
+
+  private void init() {
+    echo 'Initial application builder...'
+
+    this.systemName = 'kyle'
+    this.applicationName = 'docker-jenkins'
+    this.applicationVersion = '0.0.1-SNAPSHOT'
+    this.branchName = env.BRANCH_NAME
+
+    if (this.branchName == "master") {
+      this.port = '8000'
+    } else if (this.branchName == 'develop') {
+      this.port = '8001'
+    }
+
+    this.imageName = this.systemName + "/" + this.applicationName + ':' + (this.branchName == 'master'? '' : this.branchName + '-')  + this.applicationVersion
+
+    this.showBuildInfo()
+  }
+
+  private void showBuildInfo() {
+    echo 'Build info:'
+    echo 'System name: ' + this.systemName
+    echo 'Application name: ' + this.applicationName
+    echo 'Branch: ' + this.branchName
+    echo 'Version: ' + this.systemName
+    echo 'Image: ' + this.imageName
+  }
+
+  private void stopContainerIfExists() {
+    // Get container id of the current running container
+    def containerId = sh(returnStdout: true, script: "docker ps | grep '" + this.imageName + "' | awk '{print \$1;}'")
+    echo 'Running containerId=' + containerId
+
+    if (containerId.trim()) {
+      // Stop container
+      sh 'docker stop ' + containerId
+
+      // Wait for stop
+      sleep time: 5, unit: 'SECONDS'
+    }
+  }
 }
