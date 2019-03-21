@@ -93,16 +93,18 @@ def buildDockerImage() {
 
   stopContainerIfExists()
 
-  deleteOldImageIfExists()
+  // deleteOldImageIfExists()
 
-  sh 'docker build -t ' + env.IMAGE_NAME + " ."
+  docker.build(env.IMAGE_NAME)
+
+  // Clean up dangling images
+  // sh 'docker rmi $(docker images -f "dangling=true" -q)'
 }
 
 def stopContainerIfExists() {
   def containerId = sh(returnStdout: true, script: "docker ps | grep '${env.IMAGE_NAME}' | awk '{print \$1;}'")
 
   echo 'Running containerId=' + containerId
-
   if (containerId.trim()) {
     sh 'docker stop ' + containerId
 
