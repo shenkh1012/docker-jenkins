@@ -77,7 +77,8 @@ def init() {
 def setEnvironmentVariables() {
   env.SYSTEM_NAME = 'kyle'
   env.APPLICATION_NAME = 'docker-jenkins'
-  env.IMAGE_NAME = "${env.SYSTEM_NAME}/${env.APPLICATION_NAME}:" + ((env.BRANCH_NAME == "master") ? "" : "${env.BRANCH_NAME}-") + env.BUILD_ID
+  env.APPLICATION_VERSION = '0.0.1-SNAPSHOT'
+  env.IMAGE_NAME = "${env.SYSTEM_NAME}/${env.APPLICATION_NAME}:" + ((env.BRANCH_NAME == "master") ? "" : "${env.BRANCH_NAME}-") + env.APPLICATION_VERSION
 }
 
 def showEnvironmentVariables() {
@@ -89,12 +90,11 @@ def showEnvironmentVariables() {
 def buildDockerImage() {
   sh 'docker version'
   sh 'docker info'
-
+  sh 'docker stop ${env.IMAGE_NAME}'
+  sh 'docker rmi ${env.IMAGE_NAME}'
   docker.build(env.IMAGE_NAME)
 }
 
 def runDockerImage() {
-  docker.image(env.IMAGE_NAME).withRun('-p 8001:8080') {
-    echo '${env.IMAGE_NAME} is running'
-  }
+  sh 'docker run -d --rm -p 8001:8080 ${env.IMAGE_NAME}'
 }
