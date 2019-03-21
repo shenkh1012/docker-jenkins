@@ -104,7 +104,7 @@ def stopContainerIfExists() {
   echo 'Running containerId=' + containerId
 
   if (containerId.trim()) {
-    sh 'docker stop ${env.IMAGE_NAME}'
+    sh 'docker stop ' + env.IMAGE_NAME
 
     sleep time: 5, unit: 'SECONDS'
   }
@@ -116,7 +116,7 @@ def deleteOldImageIfExists() {
   echo 'Old imageId=' + imageId
 
   if (imageId.trim()) {
-    sh 'docker rmi ${imageId}'
+    sh 'docker rmi ' + imageId
 
     sleep time: 2, unit: 'SECONDS'
   }
