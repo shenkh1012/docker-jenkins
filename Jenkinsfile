@@ -105,7 +105,7 @@ def stopContainerIfExists() {
 
   echo 'Running containerId=${containerId}'
 
-  if (imageID.trim()) {
+  if (containerId.trim()) {
     sh 'docker stop ${env.IMAGE_NAME}'
 
     sleep time: 5, unit: 'SECONDS'
