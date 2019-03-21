@@ -1,9 +1,9 @@
 #!groovy
 
+def applicationBuilder
+
 pipeline {
   agent any
-
-  def applicationBuilder
 
   stages {
     stage('Init') {
