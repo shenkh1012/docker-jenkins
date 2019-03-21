@@ -78,7 +78,7 @@ def setEnvironmentVariables() {
   env.SYSTEM_NAME = 'kyle'
   env.APPLICATION_NAME = 'docker-jenkins'
   env.APPLICATION_VERSION = '0.0.1-SNAPSHOT'
-  env.IMAGE_NAME = "${env.SYSTEM_NAME}/${env.APPLICATION_NAME}:" + ((env.BRANCH_NAME == "master") ? "" : "${env.BRANCH_NAME}-") + env.APPLICATION_VERSION
+  env.IMAGE_NAME = "${env.SYSTEM_NAME}/${env.APPLICATION_NAME}:" + ((env.BRANCH_NAME == "master") ? "" : "${env.BRANCH_NAME}-") + env.APPLICATION_VERSION.lowerCase()
 }
 
 def showEnvironmentVariables() {
@@ -90,11 +90,26 @@ def showEnvironmentVariables() {
 def buildDockerImage() {
   sh 'docker version'
   sh 'docker info'
-  sh 'docker stop ' + env.IMAGE_NAME
-  sh 'docker rmi ' + env.IMAGE_NAME
+
+  stopContainerIfExists()
+
   docker.build(env.IMAGE_NAME)
 }
 
 def runDockerImage() {
   sh 'docker run -d --rm -p 8001:8080 ' + env.IMAGE_NAME
+}
+
+def stopContainerIfExists() {
+  def containerId = sh(returnStdout: true, script: """
+      docker ps | grep '${env.IMAGE_NAME}' | awk '{print $1}'
+  """
+
+  echo 'Running containerId=${containerId}'
+
+  if (imageID.trim()) {
+    sh 'docker stop ${env.IMAGE_NAME}'
+
+    sleep time: 5, unit: 'SECONDS'
+  }
 }
