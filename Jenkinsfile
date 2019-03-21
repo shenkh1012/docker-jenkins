@@ -3,8 +3,6 @@
 pipeline {
   agent any
 
-  applicationBuilder {}
-
   stages {
     stage('Init') {
       steps {
@@ -34,13 +32,7 @@ pipeline {
       }
 
       steps {
-        sh 'mvn test'
-      }
-
-      post {
-        always {
-          junit 'target/surefire-reports/*.xml'
-        }
+        runTests()
       }
     }
 
@@ -49,6 +41,14 @@ pipeline {
 
       steps {
         buildDockerImage()
+      }
+    }
+
+    stage('Run docker image') {
+      agent any
+
+      steps {
+        runDockerImage()
       }
     }
   }
@@ -61,29 +61,27 @@ pipeline {
 def init() {
   echo 'Initial application builder......'
 
-  applicationBuilder.systemName = 'kyle'
-  applicationBuilder.applicationName = 'docker-jenkins'
-  applicationBuilder.applicationVersion = '0.0.1-SNAPSHOT'
-  applicationBuilder.branchName = env.BRANCH_NAME
+  env.SYSTEM_NAME = 'kyle'
+  env.APPLICATION_NAME = 'docker-jenkins'
+  env.APPLICATION_VERSION = '0.0.1-SNAPSHOT'
 
-  if (applicationBuilder.branchName == "master") {
-    applicationBuilder.port = '8000'
-  } else if (applicationBuilder.branchName == 'develop') {
-    applicationBuilder.port = '8001'
+  if (env.branchName == "master") {
+    env.APPLICATION_PORT = '8000'
+  } else if (env.branchName == 'develop') {
+    env.APPLICATION_PORT = '8001'
   }
 
-  applicationBuilder.imageName = applicationBuilder.systemName + "/" + applicationBuilder.applicationName + ':' + (applicationBuilder.branchName == 'master'? '' : applicationBuilder.branchName + '-')  + applicationBuilder.applicationVersion
+  env.imageName = env.SYSTEM_NAME + "/" + env.APPLICATION_NAME + ':' + (env.branchName == 'master'? '' : env.branchName + '-')  + env.APPLICATION_VERSION
 
   showBuildInfo()
 }
 
 def showBuildInfo() {
   echo 'Build info:'
-  echo 'System name: ' + applicationBuilder.systemName
-  echo 'Application name: ' + applicationBuilder.applicationName
-  echo 'Branch: ' + applicationBuilder.branchName
-  echo 'Version: ' + applicationBuilder.systemName
-  echo 'Image: ' + applicationBuilder.imageName
+  echo 'System name: ' + env.SYSTEM_NAME
+  echo 'Application name: ' + env.APPLICATION_NAME
+  echo 'Version: ' + env.SYSTEM_NAME
+  echo 'Image: ' + env.imageName
 }
 
 /**
@@ -106,7 +104,7 @@ def runTests() {
     // Run tests with maven.
     sh 'mvn test'
   } finally {
-    junit 'target/surefire-reports/*.xml'
+    junit 'target/surefire-reAPPLICATION_PORTs/*.xml'
   }
 }
 
@@ -114,7 +112,7 @@ def runTests() {
  * Build docker image
  */
 def buildDockerImage() {
-  if (applicationBuilder.branchName == 'master' || applicationBuilder.branchName == 'develop') {
+  if (env.branchName == 'master' || env.branchName == 'develop') {
     sh 'docker version'
     sh 'docker info'
 
@@ -122,18 +120,18 @@ def buildDockerImage() {
 
     // TODO Delete old image files
 
-    docker.build(applicationBuilder.imageName)
+    docker.build(env.imageName)
 
     // TODO Clean up dangling images?? (<none>:<none> images)
     // sh 'docker rmi $(docker images -f "dangling=true" -q)'
   } else {
-    echo 'Skip build image step for branch: ' + applicationBuilder.branchName
+    echo 'Skip build image step for branch: ' + env.branchName
   }
 }
 
 def stopContainerIfExists() {
   // Get container id of the current running container
-  def containerId = sh(returnStdout: true, script: "docker ps | grep '" + applicationBuilder.imageName + "' | awk '{print \$1;}'")
+  def containerId = sh(returnStdout: true, script: "docker ps | grep '" + env.imageName + "' | awk '{print \$1;}'")
   echo 'Running containerId=' + containerId
 
   if (containerId.trim()) {
@@ -149,12 +147,11 @@ def stopContainerIfExists() {
  * Run docker image
  */
 void runDockerImage() {
-  if (applicationBuilder.branchName == 'master' || applicationBuilder.branchName == 'develop') {
+  if (env.branchName == 'master' || env.branchName == 'develop') {
     // -d: Run docker image in deemon
     // --rm: Auto-remove docker container after stop
-    sh 'docker run -d --rm -p ' + applicationBuilder.port + ':8080 ' + applicationBuilder.imageName
+    sh 'docker run -d --rm -p ' + env.APPLICATION_PORT + ':8080 ' + env.imageName
   } else {
-    echo 'Skip run docker image step for branch: ' + applicationBuilder.branchName
+    echo 'Skip run docker image step for branch: ' + env.branchName
   }
 }
-
