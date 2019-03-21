@@ -1,79 +1,11 @@
 #!groovy
 
-def applicationBuilder
+node {
+  def applicationBuilder
 
-pipeline {
-  agent any
-
-  stages {
-    stage('Init') {
-      steps {
-        init()
-      }
-    }
-
-    stage('Build Application') {
-      agent {
-        docker {
-          image 'maven:3-alpine'
-          args '-v /root/.m2:/root/.m2'
-        }
-      }
-
-      steps {
-        buildApplication()
-      }
-    }
-    
-    stage('Test') {
-      agent {
-        docker {
-          image 'maven:3-alpine'
-          args '-v /root/.m2:/root/.m2'
-        }
-      }
-
-      steps {
-        runTests()
-      }
-    }
-
-    stage('Build docker image') {
-      agent any
-
-      steps {
-        buildDockerImage()
-      }
-    }
-
-    stage('Run docker image') {
-      agent any
-
-      steps {
-        runDockerImage()
-      }
-    }
+  stage('init') {
+    applicationBuilder = new ApplicationBuilder()
   }
-}
-
-def init() {
-  applicationBuilder = new ApplicationBuilder()
-}
-
-def buildApplication() {
-  applicationBuilder.buildApplication()
-}
-
-def runTests() {
-  applicationBuilder.runTests()
-}
-
-def buildDockerImage() {
-  applicationBuilder.buildDockerImage()
-}
-
-def runDockerImage() {
-  applicationBuilder.runDockerImage()
 }
 
 class ApplicationBuilder {
