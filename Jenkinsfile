@@ -17,7 +17,7 @@ class ApplicationBuilder {
   private String imageName
 
   ApplicationBuilder() {
-    init()
+    this.init()
   }
 
   /**
