@@ -1,10 +1,10 @@
 #!groovy
 
-node {
-  def applicationBuilder
+def applicationBuilder = new ApplicationBuilder()
 
-  stage('init') {
-    applicationBuilder = new ApplicationBuilder()
+node {
+  stage('Init') {
+    applicationBuilder.init()
   }
 }
 
@@ -17,7 +17,6 @@ class ApplicationBuilder {
   private String imageName
 
   ApplicationBuilder() {
-    this.init()
   }
 
   /**
