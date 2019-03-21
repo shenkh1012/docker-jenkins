@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @DisplayName("Home Controller tests")
 public class HomeControllerTest {
   private static final String APPLICATION_NAME = "docker-jenkins";
-  private static final String APPLICATION_DESCRIPTION = "Test CI/CD with jenkins";
+  private static final String APPLICATION_DESCRIPTION = "Test CI/CD with jenkins.";
   private static final String APPLICATION_VERSION = "0.0.1-SNAPSHOT";
 
   @Autowired
