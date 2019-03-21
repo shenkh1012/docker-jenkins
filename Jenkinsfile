@@ -95,7 +95,7 @@ def buildDockerImage() {
 
   deleteOldImageIfExists()
 
-  sh 'docker build --tag ' + env.IMAGE_NAME
+  sh 'docker build -t ' + env.IMAGE_NAME
 }
 
 def stopContainerIfExists() {
@@ -111,7 +111,7 @@ def stopContainerIfExists() {
 }
 
 def deleteOldImageIfExists() {
-  def imageId = sh(returnStdout: true, script: "docker image | grep '${env.IMAGE_NAME}' | awk '{print \$3;}'")
+  def imageId = sh(returnStdout: true, script: "docker images | grep '${env.IMAGE_NAME}' | awk '{print \$3;}'")
 
   echo 'Old imageId=' + imageId
 
