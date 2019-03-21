@@ -8,7 +8,7 @@ pipeline {
   stages {
     stage('Init') {
       steps {
-        applicationBuilder = new ApplicationBuilder()
+        init()
       }
     }
 
@@ -54,6 +54,10 @@ pipeline {
       }
     }
   }
+}
+
+def init() {
+  applicationBuilder = new ApplicationBuilder()
 }
 
 class ApplicationBuilder {
