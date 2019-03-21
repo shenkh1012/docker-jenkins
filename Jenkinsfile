@@ -21,7 +21,7 @@ pipeline {
       }
 
       steps {
-        applicationBuilder.buildApplication()
+        buildApplication()
       }
     }
     
@@ -34,7 +34,7 @@ pipeline {
       }
 
       steps {
-        applicationBuilder.runTests()
+        runTests()
       }
     }
 
@@ -42,7 +42,7 @@ pipeline {
       agent any
 
       steps {
-        applicationBuilder.runDockerImage()
+        buildDockerImage()
       }
     }
 
@@ -50,7 +50,7 @@ pipeline {
       agent any
 
       steps {
-        applicationBuilder.runDockerImage()
+        runDockerImage()
       }
     }
   }
@@ -58,6 +58,22 @@ pipeline {
 
 def init() {
   applicationBuilder = new ApplicationBuilder()
+}
+
+def buildApplication() {
+  applicationBuilder.buildApplication()
+}
+
+def runTests() {
+  applicationBuilder.runTests()
+}
+
+def buildDockerImage() {
+  applicationBuilder.buildDockerImage()
+}
+
+def runDockerImage() {
+  applicationBuilder.runDockerImage()
 }
 
 class ApplicationBuilder {
