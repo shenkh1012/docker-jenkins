@@ -3,6 +3,8 @@
 pipeline {
   agent any
 
+  def applicationBuilder = []
+
   stages {
     stage('Init') {
       steps {
@@ -51,8 +53,6 @@ pipeline {
     }
   }
 }
-
-def applicationBuilder = []
 
 /**
  * Init build info
