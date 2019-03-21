@@ -101,14 +101,12 @@ def runDockerImage() {
 }
 
 def stopContainerIfExists() {
-  def containerId = sh(returnStdout: true, script: """
-      docker ps | grep '${env.IMAGE_NAME}' | awk '{print $1}'
-  """
+  def containerId = sh(returnStdout: true, script: "docker ps | grep '" + env.IMAGE_NAME + "}' | awk '{print $1}'"
 
   echo 'Running containerId=${containerId}'
 
   if (imageID.trim()) {
-    sh 'docker stop ${env.IMAGE_NAME}'
+    sh 'docker stop ' + env.IMAGE_NAME
 
     sleep time: 5, unit: 'SECONDS'
   }
