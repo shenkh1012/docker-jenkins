@@ -78,7 +78,7 @@ def setEnvironmentVariables() {
   env.SYSTEM_NAME = 'kyle'
   env.APPLICATION_NAME = 'docker-jenkins'
   env.APPLICATION_VERSION = '0.0.1-SNAPSHOT'
-  env.IMAGE_NAME = "${env.SYSTEM_NAME}/${env.APPLICATION_NAME}:" + ((env.BRANCH_NAME == "master") ? "" : "${env.BRANCH_NAME}-") + env.APPLICATION_VERSION.lowerCase()
+  env.IMAGE_NAME = "${env.SYSTEM_NAME}/${env.APPLICATION_NAME}:" + ((env.BRANCH_NAME == "master") ? "" : "${env.BRANCH_NAME}-") + env.APPLICATION_VERSION.toLowerCase()
 }
 
 def showEnvironmentVariables() {
