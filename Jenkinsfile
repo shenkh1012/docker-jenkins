@@ -95,7 +95,7 @@ def buildDockerImage() {
 
   deleteOldImageIfExists()
 
-  docker.build(env.IMAGE_NAME)
+  sh 'docker build --tag ' + env.IMAGE_NAME
 }
 
 def stopContainerIfExists() {
