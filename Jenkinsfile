@@ -55,6 +55,14 @@ pipeline {
         buildDockerImage()
       }
     }
+
+    stage('Run docker image') {
+      agent any
+
+      steps {
+        runDockerImage()
+      }
+    }
   }
 }
 
@@ -83,4 +91,10 @@ def buildDockerImage() {
   sh 'docker info'
 
   docker.build(env.IMAGE_NAME)
+}
+
+def runDockerImage() {
+  docker.image(env.IMAGE_NAME).withRun('-d --rm -p 8001:8080') {
+    echo '${env.IMAGE_NAME} is running'
+  }
 }
