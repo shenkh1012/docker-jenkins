@@ -93,11 +93,9 @@ def buildDockerImage() {
 
   stopContainerIfExists()
 
-  docker.build(env.IMAGE_NAME)
-}
+  deleteOldImageIfExists()
 
-def runDockerImage() {
-  sh 'docker run -d --rm -p 8001:8080 ' + env.IMAGE_NAME
+  docker.build(env.IMAGE_NAME)
 }
 
 def stopContainerIfExists() {
@@ -110,4 +108,21 @@ def stopContainerIfExists() {
 
     sleep time: 5, unit: 'SECONDS'
   }
+}
+
+def deleteOldImageIfExists() {
+  def imageId = sh(returnStdout: true, script: "docker image | grep '${env.IMAGE_NAME}' | awk '{print \$3;}'")
+
+  echo 'Old imageId=' + imageId
+
+  if (imageId.trim()) {
+    sh 'docker rmi ${imageId}'
+
+    sleep time: 2, unit: 'SECONDS'
+  }
+}
+
+
+def runDockerImage() {
+  sh 'docker run -d --rm -p 8001:8080 ' + env.IMAGE_NAME
 }
