@@ -94,7 +94,7 @@ def buildDockerImage() {
 }
 
 def runDockerImage() {
-  docker.image(env.IMAGE_NAME).withRun('-d --rm -p 8001:8080') {
+  docker.image(env.IMAGE_NAME).withRun('-p 8001:8080') {
     echo '${env.IMAGE_NAME} is running'
   }
 }
