@@ -90,11 +90,11 @@ def showEnvironmentVariables() {
 def buildDockerImage() {
   sh 'docker version'
   sh 'docker info'
-  sh 'docker stop ' + ${env.IMAGE_NAME}
-  sh 'docker rmi ' + ${env.IMAGE_NAME}
+  sh 'docker stop ' + env.IMAGE_NAME
+  sh 'docker rmi ' + env.IMAGE_NAME
   docker.build(env.IMAGE_NAME)
 }
 
 def runDockerImage() {
-  sh 'docker run -d --rm -p 8001:8080 ' + ${env.IMAGE_NAME}
+  sh 'docker run -d --rm -p 8001:8080 ' + env.IMAGE_NAME
 }
