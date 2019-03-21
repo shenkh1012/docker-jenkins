@@ -3,7 +3,7 @@
 pipeline {
   agent any
 
-  def applicationBuilder = []
+  applicationBuilder {}
 
   stages {
     stage('Init') {
