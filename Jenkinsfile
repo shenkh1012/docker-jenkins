@@ -104,7 +104,7 @@ def runTests() {
     // Run tests with maven.
     sh 'mvn test'
   } finally {
-    junit 'target/surefire-reAPPLICATION_PORTs/*.xml'
+    junit 'target/surefire-reports/TEST-*.xml'
   }
 }
 
