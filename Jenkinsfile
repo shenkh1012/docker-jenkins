@@ -71,6 +71,11 @@ class BuildInfo {
     systemName = 'dti-ddp'
     applicationName = 'ks-jenkins-docker'
     version = '0.2.0.SNAPSHOT'.toLowerCase()
+
+    echo 'Build info from class: BuildInfo -------------- '
+    echo 'System name: ' + systemName
+    echo 'Application name: ' + applicationName
+    echo 'Version: ' + version
   }
 
   def getSystemName() {
