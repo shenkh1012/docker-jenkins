@@ -55,33 +55,33 @@ pipeline {
 }
 
 class BuildInfo {
-  private static final BuildInfo instance = new BuildInfo()
+  private static INSTANCE = new BuildInfo()
 
-  static String systemName
-  static String applicationName
-  static String version
+  def systemName
+  def applicationName
+  def version
 
   private BuildInfo() {}
 
-  static BuildInfo getInstance() {
-    return instance
+  static getInstance() {
+    return INSTANCE
   }
 
-  static void init() {
+  def init() {
     systemName = 'dti-ddp'
     applicationName = 'ks-jenkins-docker'
     version = '0.2.0.SNAPSHOT'.toLowerCase()
   }
 
-  static String getSystemName() {
+  def getSystemName() {
     return systemName
   }
 
-  static String getApplicationName() {
+  def getApplicationName() {
     return applicationName
   }
 
-  static String getVersion() {
+  def String getVersion() {
     return version
   }
 }
@@ -107,7 +107,7 @@ def init() {
 
   showBuildInfo()
 
-  BuildInfo.getInstance().init()
+  BuildInfo.instance.init()
 }
 
 def showBuildInfo() {
@@ -123,9 +123,9 @@ def showBuildInfo() {
  */
 def buildApplication() {
   echo 'Build info -------------- '
-  echo 'System name: ' + BuildInfo.getInstance().getSystemName()
-  echo 'Application name: ' + BuildInfo.getInstance().getApplicationName()
-  echo 'Version: ' + BuildInfo.getInstance().getVersion()
+  echo 'System name: ' + BuildInfo.instance.systemName
+  echo 'Application name: ' + BuildInfo.instance.applicationName
+  echo 'Version: ' + BuildInfo.instance.version
 
   // Build application with maven and repackage with spring-boot
   try {
