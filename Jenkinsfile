@@ -54,8 +54,6 @@ pipeline {
   }
 }
 
-def buildInfo = [:]
-
 /**
  * Init build info
  * @return
@@ -93,9 +91,6 @@ def showBuildInfo() {
  * Build application
  */
 def buildApplication() {
-  echo 'Build info -------------- '
-  echo 'System name: ' + buildInfo["systemName"]
-
   // Build application with maven and repackage with spring-boot
   try {
     sh 'mvn -B -DskipTests clean package spring-boot:repackage'
