@@ -54,61 +54,7 @@ pipeline {
   }
 }
 
-class BuildInfo {
-  private static INSTANCE = new BuildInfo()
-
-  def systemName
-  def applicationName
-  def branchName
-  def version
-  def imageName
-  def port
-
-  private BuildInfo() {}
-
-  static getInstance() {
-    return INSTANCE
-  }
-
-  def init() {
-    systemName = 'dti-ddp'
-    applicationName = 'ks-jenkins-docker'
-    version = '0.2.0.SNAPSHOT'.toLowerCase()
-    branchName = env.BRANCH_NAME
-
-    if (branchName == "master") {
-      port = '8000'
-    } else if (branchName == 'develop') {
-      port = '8001'
-    }
-
-    imageName = systemName + "/" + applicationName + ':' + (branchName == 'master'? '' : branchName + '-')  + version
-  }
-
-  def getSystemName() {
-    return systemName
-  }
-
-  def getApplicationName() {
-    return applicationName
-  }
-
-  def getBranchName() {
-    return branchName
-  }
-
-  def getVersion() {
-    return version
-  }
-
-  def getImageName() {
-    return imageName
-  }
-
-  def getPort() {
-    return port
-  }
-}
+def buildInfo = [:]
 
 /**
  * Init build info
@@ -118,6 +64,7 @@ def init() {
   echo 'Initial application builder......'
 
   env.SYSTEM_NAME = 'kyle'
+  buildInfo["systemName"] = 'kyle'
   env.APPLICATION_NAME = 'docker-jenkins'
   env.APPLICATION_VERSION = '0.0.1-SNAPSHOT'
 
@@ -147,11 +94,7 @@ def showBuildInfo() {
  */
 def buildApplication() {
   echo 'Build info -------------- '
-  echo 'System name: ' + BuildInfo.instance.systemName
-  echo 'Application name: ' + BuildInfo.instance.applicationName
-  echo 'Version: ' + BuildInfo.instance.version
-  echo 'Port: ' + BuildInfo.instance.port
-  echo 'Image name: ' + BuildInfo.instance.imageName
+  echo 'System name: ' + buildInfo["systemName"]
 
   // Build application with maven and repackage with spring-boot
   try {
