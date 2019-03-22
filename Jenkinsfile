@@ -54,6 +54,38 @@ pipeline {
   }
 }
 
+class BuildInfo {
+  private static final BuildInfo instance = new BuildInfo()
+
+  static String systemName
+  static String applicationName
+  static String version
+
+  private BuildInfo() {}
+
+  static BuildInfo getInstance() {
+    return instance
+  }
+
+  static void init() {
+    systemName = 'dti-ddp'
+    applicationName = 'ks-jenkins-docker'
+    version = '0.2.0.SNAPSHOT'.toLowerCase()
+  }
+
+  static String getSystemName() {
+    return systemName
+  }
+
+  static String getApplicationName() {
+    return applicationName
+  }
+
+  static String getVersion() {
+    return version
+  }
+}
+
 /**
  * Init build info
  * @return
@@ -74,6 +106,8 @@ def init() {
   env.imageName = env.SYSTEM_NAME + "/" + env.APPLICATION_NAME + ':' + (env.branchName == 'master'? '' : env.branchName + '-')  + env.APPLICATION_VERSION
 
   showBuildInfo()
+
+  BuildInfo.getInstance().init()
 }
 
 def showBuildInfo() {
@@ -88,6 +122,11 @@ def showBuildInfo() {
  * Build application
  */
 def buildApplication() {
+  echo 'Build info -------------- '
+  echo 'System name: ' + BuildInfo.getInstance().getSystemName()
+  echo 'Application name: ' + BuildInfo.getInstance().getApplicationName()
+  echo 'Version: ' + BuildInfo.getInstance().getVersion()
+
   // Build application with maven and repackage with spring-boot
   try {
     sh 'mvn -B -DskipTests clean package spring-boot:repackage'
@@ -122,8 +161,12 @@ def buildDockerImage() {
 
     docker.build(env.imageName)
 
-    // TODO Clean up dangling images?? (<none>:<none> images)
-    // sh 'docker rmi $(docker images -f "dangling=true" -q)'
+    try {
+      // Clean up dangling images (<none>:<none> images).
+      sh 'docker rmi $(docker images -f "dangling=true" -q)'
+    } catch (ignore) {
+      // That's fine.
+    }
   } else {
     echo 'Skip build image step for branch: ' + env.branchName
   }
@@ -146,7 +189,7 @@ def stopContainerIfExists() {
 /**
  * Run docker image
  */
-void runDockerImage() {
+def runDockerImage() {
   if (env.branchName == 'master' || env.branchName == 'develop') {
     // -d: Run docker image in deemon
     // --rm: Auto-remove docker container after stop
