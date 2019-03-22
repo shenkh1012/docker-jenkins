@@ -59,7 +59,10 @@ class BuildInfo {
 
   def systemName
   def applicationName
+  def branchName
   def version
+  def imageName
+  def port
 
   private BuildInfo() {}
 
@@ -71,11 +74,15 @@ class BuildInfo {
     systemName = 'dti-ddp'
     applicationName = 'ks-jenkins-docker'
     version = '0.2.0.SNAPSHOT'.toLowerCase()
+    branchName = env.BRANCH_NAME
 
-    println('Build info from class: BuildInfo -------------- ')
-    println('System name: ' + systemName)
-    println('Application name: ' + applicationName)
-    println('Version: ' + version)
+    if (branchName == "master") {
+      port = '8000'
+    } else if (branchName == 'develop') {
+      port = '8001'
+    }
+
+    imageName = systemName + "/" + applicationName + ':' + (branchName == 'master'? '' : branchName + '-')  + version
   }
 
   def getSystemName() {
@@ -86,8 +93,20 @@ class BuildInfo {
     return applicationName
   }
 
-  def String getVersion() {
+  def getBranchName() {
+    return branchName
+  }
+
+  def getVersion() {
     return version
+  }
+
+  def getImageName() {
+    return imageName
+  }
+
+  def getPort() {
+    return port
   }
 }
 
@@ -102,13 +121,13 @@ def init() {
   env.APPLICATION_NAME = 'docker-jenkins'
   env.APPLICATION_VERSION = '0.0.1-SNAPSHOT'
 
-  if (env.branchName == "master") {
+  if (env.BRANCH_NAME == "master") {
     env.APPLICATION_PORT = '8000'
-  } else if (env.branchName == 'develop') {
+  } else if (env.BRANCH_NAME == 'develop') {
     env.APPLICATION_PORT = '8001'
   }
 
-  env.imageName = env.SYSTEM_NAME + "/" + env.APPLICATION_NAME + ':' + (env.branchName == 'master'? '' : env.branchName + '-')  + env.APPLICATION_VERSION
+  env.imageName = env.SYSTEM_NAME + "/" + env.APPLICATION_NAME + ':' + (env.BRANCH_NAME == 'master'? '' : env.BRANCH_NAME + '-')  + env.APPLICATION_VERSION
 
   showBuildInfo()
 
@@ -131,6 +150,8 @@ def buildApplication() {
   echo 'System name: ' + BuildInfo.instance.systemName
   echo 'Application name: ' + BuildInfo.instance.applicationName
   echo 'Version: ' + BuildInfo.instance.version
+  echo 'Port: ' + BuildInfo.instance.port
+  echo 'Image name: ' + BuildInfo.instance.imageName
 
   // Build application with maven and repackage with spring-boot
   try {
