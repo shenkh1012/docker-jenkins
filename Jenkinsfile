@@ -72,10 +72,10 @@ class BuildInfo {
     applicationName = 'ks-jenkins-docker'
     version = '0.2.0.SNAPSHOT'.toLowerCase()
 
-    echo('Build info from class: BuildInfo -------------- ')
-    echo('System name: ' + systemName)
-    echo('Application name: ' + applicationName)
-    echo('Version: ' + version)
+    println('Build info from class: BuildInfo -------------- ')
+    println('System name: ' + systemName)
+    println('Application name: ' + applicationName)
+    println('Version: ' + version)
   }
 
   def getSystemName() {
