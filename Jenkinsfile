@@ -62,21 +62,18 @@ def init() {
   echo 'Initial application builder......'
 
   env.SYSTEM_NAME = 'kyle'
-  buildInfo["systemName"] = 'kyle'
   env.APPLICATION_NAME = 'docker-jenkins'
   env.APPLICATION_VERSION = '0.0.1-SNAPSHOT'
 
   if (env.BRANCH_NAME == "master") {
-    env.APPLICATION_PORT = '8000'
+    env.APPLICATION_PORT = '8100'
   } else if (env.BRANCH_NAME == 'develop') {
-    env.APPLICATION_PORT = '8001'
+    env.APPLICATION_PORT = '8101'
   }
 
   env.imageName = env.SYSTEM_NAME + "/" + env.APPLICATION_NAME + ':' + (env.BRANCH_NAME == 'master'? '' : env.BRANCH_NAME + '-')  + env.APPLICATION_VERSION
 
   showBuildInfo()
-
-  BuildInfo.instance.init()
 }
 
 def showBuildInfo() {
