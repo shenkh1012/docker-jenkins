@@ -27,8 +27,10 @@ pipeline {
 }
 
 def mavenImage() {
-  return docker {
-    image("maven:3-jdk-8")
-    args("-v /root/.m2:/root/.m2")
+  return {
+    docker {
+      image("maven:3-jdk-8")
+      args("-v /root/.m2:/root/.m2")
+    }
   }
 }
