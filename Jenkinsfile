@@ -11,7 +11,9 @@ pipeline {
     }
 
     stage('Build') {
-      agent mavenImage()
+      agent {
+        mavenImage()
+      }
       steps {
         sh 'mvn -B clean compile'
       }
@@ -27,10 +29,8 @@ pipeline {
 }
 
 def mavenImage() {
-  return {
-    docker {
-      image("maven:3-jdk-8")
-      args("-v /root/.m2:/root/.m2")
-    }
-  } as Object
+  return docker {
+    image("maven:3-jdk-8")
+    args("-v /root/.m2:/root/.m2")
+  }
 }
