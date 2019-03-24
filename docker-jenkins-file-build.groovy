@@ -35,11 +35,13 @@ node {
   }
 
   stage('Run docker image') {
-    if (env.branchName == 'master' || env.branchName == 'develop') {
-      // -d: Run docker image in daemon
-      // --rm: Auto-remove docker container after stop
-      sh 'docker run -d --rm -p ' + env.APPLICATION_PORT + ':8080 ' + env.imageName
+    when {
+      equals("expected":"master", "actual" : env.BRANCH_NAME)
     }
+
+    // -d: Run docker image in daemon
+    // --rm: Auto-remove docker container after stop
+    sh 'docker run -d --rm -p ' + env.APPLICATION_PORT + ':8080 ' + env.imageName
   }
 }
 
