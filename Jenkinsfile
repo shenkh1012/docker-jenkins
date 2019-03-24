@@ -1,6 +1,6 @@
 #!groovy
 
-def MAVEN_IMAGE = "maven:3.5-jdk-8"
+def MAVEN_IMAGE = "maven:3-jdk-8"
 def MAVEN_ARGS = "-v /root/.m2:/root/.m2"
 
 node {
