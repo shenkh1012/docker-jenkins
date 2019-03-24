@@ -2,13 +2,15 @@
 
 def MAVEN_IMAGE = "maven:3-jdk-8"
 def MAVEN_ARGS = "-v /root/.m2:/root/.m2"
-def buildInfo = null
+def buildInfo = [
+    "branchName" : ""
+]
 
 node {
   stage('Init') {
     echo('Init build info')
-    buildInfo = BuildInfo.instance
-    echo("${buildInfo.branchName}")
+    init()
+    echo(buildInfo.branchName)
 
     checkout scm
   }
@@ -30,33 +32,6 @@ node {
   }
 }
 
-class BuildInfo {
-  def INSTANCE = new BuildInfo()
-
-  private String applicationName
-  private String branchName
-  private String version
-
-  private BuildInfo() {}
-
-  static BuildInfo getInstance() {
-    return INSTANCE
-  }
-
-  void init() {
-    this.applicationName = "docker-jenkins"
-    this.branchName = "${BRANCH_NAME}"
-  }
-
-  String getApplicationName() {
-    return applicationName
-  }
-
-  String getBranchName() {
-    return branchName
-  }
-
-  String getVersion() {
-    return version
-  }
+def init() {
+  buildInfo.branchName = "${BRANCH_NAME}"
 }
