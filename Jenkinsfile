@@ -6,12 +6,9 @@ node {
   }
 
   stage('Build') {
-    sh 'pwd'
-    sh 'pwd'
+    checkout scm
 
     withDockerContainer('image': 'maven:3-jdk-8') {
-      echo 'Building...'
-      sh 'pwd'
       sh 'mvn -B clean compile'
     }
   }
