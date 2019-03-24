@@ -2,11 +2,14 @@
 
 def MAVEN_IMAGE = "maven:3-jdk-8"
 def MAVEN_ARGS = "-v /root/.m2:/root/.m2"
+def buildInfo = null
 
 node {
   stage('Init') {
     echo('Init')
-    checkout scm
+    buildInfo = BuildInfo.instance
+
+    checkout(scm)
   }
 
   stage('Build') {
@@ -27,5 +30,42 @@ node {
         junit('target/surefire-reports/*.xml')
       }
     }
+  }
+
+  stage('Deploy') {
+    echo('Deploy')
+  }
+}
+
+class BuildInfo {
+  private static BuildInfo INSTANCE = new BuildInfo()
+
+  private String applicationName
+  private String branchName
+  private String version
+
+  private BuildInfo() {
+    init()
+  }
+
+  static BuildInfo getInstance() {
+    return INSTANCE
+  }
+
+  private void init() {
+    this.applicationName = "docker-jenkins"
+    this.branchName = "${BRANCH_NAME}"
+  }
+
+  String getApplicationName() {
+    return applicationName
+  }
+
+  String getBranchName() {
+    return branchName
+  }
+
+  String getVersion() {
+    return version
   }
 }

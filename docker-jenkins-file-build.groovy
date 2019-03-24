@@ -25,3 +25,34 @@ node {
     }
   }
 }
+
+class BuildInfo {
+  private static BuildInfo INSTANCE = new BuildInfo()
+
+  private String applicationName
+  private String branchName
+  private String version
+
+  private BuildInfo() {}
+
+  static BuildInfo getInstance() {
+    return INSTANCE
+  }
+
+  void init() {
+    this.applicationName = "docker-jenkins"
+    this.branchName = "${BRANCH_NAME}"
+  }
+
+  String getApplicationName() {
+    return applicationName
+  }
+
+  String getBranchName() {
+    return branchName
+  }
+
+  String getVersion() {
+    return version
+  }
+}
