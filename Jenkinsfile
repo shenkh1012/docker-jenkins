@@ -1,21 +1,32 @@
 #!groovy
 
-node {
+pipeline {
+  agent any
+
   stage('Init') {
-    echo 'Init'
+    steps {
+      echo 'Init'
+    }
   }
 
   stage('Build') {
-    checkout scm
-
-    withDockerContainer('image': 'maven:3-jdk-8', 'args':'-v /root/.m2:/root/.m2') {
+    agent mavenImage()
+    steps {
       sh 'mvn -B clean compile'
     }
   }
 
   stage('Test') {
-    withDockerContainer('image': 'maven:3-jdk-8', 'args':'-v /root/.m2:/root/.m2') {
+    agent mavenImage()
+    steps {
       sh 'mvn test'
     }
+  }
+}
+
+def mavenImage() {
+  return docker {
+    image("maven:3-jdk-8")
+    args("-v /root/.m2:/root/.m2")
   }
 }
