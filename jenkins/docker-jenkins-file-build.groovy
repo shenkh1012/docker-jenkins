@@ -9,7 +9,7 @@ node {
     withDockerContainer('image': 'maven:3-jdk-8') {
       dir('../') {
         echo 'Building...'
-        pwd
+        sh 'pwd'
         sh 'mvn -B compile'
       }
     }
