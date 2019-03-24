@@ -2,10 +2,14 @@
 
 def MAVEN_IMAGE = "maven:3-jdk-8"
 def MAVEN_ARGS = "-v /root/.m2:/root/.m2"
+def buildInfo = null
 
 node {
   stage('Init') {
-    echo('Init')
+    echo('Init build info')
+    buildInfo = BuildInfo.instance
+    echo("${buildInfo.branchName}")
+
     checkout scm
   }
 
