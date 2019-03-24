@@ -32,6 +32,6 @@ node {
   }
 }
 
-def init() {
+void init() {
   buildInfo.branchName = "${BRANCH_NAME}"
 }
