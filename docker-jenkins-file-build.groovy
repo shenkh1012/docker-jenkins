@@ -16,6 +16,7 @@ node {
 
   withDockerContainer("image" : env.MAVEN_IMAGE, "args" : env.MAVEN_ARGS) {
     stage('Build') {
+      checkout(scm)
       sh('mvn -B -DskipTests clean package spring-boot:repackage')
       archiveArtifacts(artifacts: 'target/*.jar', fingerprint: true)
     }

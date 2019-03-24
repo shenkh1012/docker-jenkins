@@ -1,73 +1,161 @@
 #!groovy
 
-def MAVEN_IMAGE = "maven:3-jdk-8"
-def MAVEN_ARGS = "-v /root/.m2:/root/.m2"
-def buildInfo = null
+pipeline {
+  agent any
 
-node {
-  stage('Init') {
-    echo('Init')
-
-    buildInfo = BuildInfo.instance
-    echo(buildInfo.branchName)
-
-    checkout(scm)
-  }
-
-  stage('Build') {
-    withDockerContainer("image" : MAVEN_IMAGE, "args" : MAVEN_ARGS) {
-      try {
-        sh('mvn -B -DskipTests clean package spring-boot:repackage')
-      } finally {
-        archiveArtifacts(artifacts: 'target/*.jar', fingerprint: true)
+  stages {
+    stage('Init') {
+      steps {
+        init()
       }
     }
-  }
 
-  stage('Test') {
-    withDockerContainer("image" : MAVEN_IMAGE, "args" : MAVEN_ARGS) {
-      try {
-        sh('mvn test')
-      } finally {
-        junit('target/surefire-reports/*.xml')
+    stage('Build Application') {
+      agent {
+        docker {
+          image 'maven:3-alpine'
+          args '-v /root/.m2:/root/.m2'
+        }
+      }
+
+      steps {
+        buildApplication()
       }
     }
-  }
 
-  stage('Deploy') {
-    echo('Deploy')
+    stage('Test') {
+      agent {
+        docker {
+          image 'maven:3-alpine'
+          args '-v /root/.m2:/root/.m2'
+        }
+      }
+
+      steps {
+        runTests()
+      }
+    }
+
+    stage('Build docker image') {
+      agent any
+
+      steps {
+        buildDockerImage()
+      }
+    }
+
+    stage('Run docker image') {
+      agent any
+
+      steps {
+        runDockerImage()
+      }
+    }
   }
 }
 
-class BuildInfo {
-  private static BuildInfo INSTANCE = new BuildInfo()
+/**
+ * Init build info
+ * @return
+ */
+def init() {
+  echo 'Initial application builder......'
 
-  private String applicationName
-  private String branchName
-  private String version
+  env.SYSTEM_NAME = 'kyle'
+  env.APPLICATION_NAME = 'docker-jenkins'
+  env.APPLICATION_VERSION = '0.0.1-SNAPSHOT'
 
-  private BuildInfo() {
-    init()
+  if (env.BRANCH_NAME == "master") {
+    env.APPLICATION_PORT = '8100'
+  } else if (env.BRANCH_NAME == 'develop') {
+    env.APPLICATION_PORT = '8101'
   }
 
-  static BuildInfo getInstance() {
-    return INSTANCE
-  }
+  env.imageName = env.SYSTEM_NAME + "/" + env.APPLICATION_NAME + ':' + (env.BRANCH_NAME == 'master'? '' : env.BRANCH_NAME + '-')  + env.APPLICATION_VERSION
 
-  private void init() {
-    this.applicationName = "docker-jenkins"
-    this.branchName = "${BRANCH_NAME}"
-  }
+  showBuildInfo()
+}
 
-  String getApplicationName() {
-    return applicationName
-  }
+def showBuildInfo() {
+  echo 'Build info:'
+  echo 'System name: ' + env.SYSTEM_NAME
+  echo 'Application name: ' + env.APPLICATION_NAME
+  echo 'Version: ' + env.SYSTEM_NAME
+  echo 'Image: ' + env.imageName
+}
 
-  String getBranchName() {
-    return branchName
+/**
+ * Build application
+ */
+def buildApplication() {
+  // Build application with maven and repackage with spring-boot
+  try {
+    sh 'mvn -B -DskipTests clean package spring-boot:repackage'
+  } finally {
+    archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
   }
+}
 
-  String getVersion() {
-    return version
+/**
+ * Run test cases
+ */
+def runTests() {
+  try {
+    // Run tests with maven.
+    sh 'mvn test'
+  } finally {
+    junit 'target/surefire-reports/TEST-*.xml'
+  }
+}
+
+/**
+ * Build docker image
+ */
+def buildDockerImage() {
+  if (env.branchName == 'master' || env.branchName == 'develop') {
+    sh 'docker version'
+    sh 'docker info'
+
+    stopContainerIfExists()
+
+    // TODO Delete old image files
+
+    docker.build(env.imageName)
+
+    try {
+      // Clean up dangling images (<none>:<none> images).
+      sh 'docker rmi $(docker images -f "dangling=true" -q)'
+    } catch (ignore) {
+      // That's fine.
+    }
+  } else {
+    echo 'Skip build image step for branch: ' + env.branchName
+  }
+}
+
+def stopContainerIfExists() {
+  // Get container id of the current running container
+  def containerId = sh(returnStdout: true, script: "docker ps | grep '" + env.imageName + "' | awk '{print \$1;}'")
+  echo 'Running containerId=' + containerId
+
+  if (containerId.trim()) {
+    // Stop container
+    sh 'docker stop ' + containerId
+
+    // Wait for stop
+    sleep time: 5, unit: 'SECONDS'
+  }
+}
+
+/**
+ * Run docker image
+ */
+def runDockerImage() {
+  if (env.branchName == 'master' || env.branchName == 'develop') {
+    // -d: Run docker image in deemon
+    // --rm: Auto-remove docker container after stop
+    sh 'docker run -d --rm -p ' + env.APPLICATION_PORT + ':8080 ' + env.imageName
+  } else {
+    echo 'Skip run docker image step for branch: ' + env.branchName
   }
 }
