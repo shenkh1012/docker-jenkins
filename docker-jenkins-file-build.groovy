@@ -34,14 +34,13 @@ node {
     docker.build(env.IMAGE_NAME)
   }
 
-  stage('Run docker image') {
-    when {
-      equals("expected":"master", "actual" : env.BRANCH_NAME)
+  if (env.BRANCH_NAME == "master" || env.BRANCH_NAME == "develop") {
+    stage('Run docker image') {
+      // -d: Run docker image in daemon
+      // --rm: Auto-remove docker container after stop
+      sh 'docker run -d --rm -p ' + env.APPLICATION_PORT + ':8080 ' + env.imageName
     }
-
-    // -d: Run docker image in daemon
-    // --rm: Auto-remove docker container after stop
-    sh 'docker run -d --rm -p ' + env.APPLICATION_PORT + ':8080 ' + env.imageName
   }
+
 }
 
