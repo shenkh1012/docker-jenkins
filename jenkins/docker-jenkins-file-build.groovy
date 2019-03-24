@@ -8,6 +8,7 @@ node {
   stage('Build') {
     withDockerContainer('image': 'maven:3-jdk-8') {
       dir('../') {
+        echo 'Building...'
         pwd
         sh 'mvn -B compile'
       }
