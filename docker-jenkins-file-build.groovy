@@ -38,7 +38,7 @@ node {
     stage('Run docker image') {
       // -d: Run docker image in daemon
       // --rm: Auto-remove docker container after stop
-      sh 'docker run -d --rm -p ' + env.APPLICATION_PORT + ':8080 ' + env.imageName
+      sh('docker run -d --rm -p ' + env.APPLICATION_PORT + ':8080 ' + env.IMAGE_NAME)
     }
   }
 
