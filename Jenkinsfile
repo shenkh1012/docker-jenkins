@@ -12,7 +12,11 @@ node {
   stage('Build') {
     withDockerContainer("image" : MAVEN_IMAGE, "args" : MAVEN_ARGS) {
       sh('mvn -B -DskipTests clean package spring-boot:repackage')
+    }
+  }
 
+  stage('Test') {
+    withDockerContainer("image" : MAVEN_IMAGE, "args" : MAVEN_ARGS) {
       try {
         sh('mvn test')
       } finally {
