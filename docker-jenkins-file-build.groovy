@@ -31,6 +31,5 @@ node {
 }
 
 def init() {
-  def buildInfo = ${"buildInfo"}
-  buildInfo.put("branchName" : "develop")
+  buildInfo.put("branchName" : "${env.BRANCH_NAME}")
 }
