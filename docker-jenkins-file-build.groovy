@@ -1,26 +1,26 @@
 #!groovy
 
-def MAVEN_IMAGE = "maven:3-jdk-8"
-def MAVEN_ARGS = "-v /root/.m2:/root/.m2"
-def buildInfo = ["branchName" : ""]
-
 node {
   stage('Init') {
-    echo('Init build info')
-    echo(buildInfo.branchName)
-    init()
-    echo(buildInfo.branchName)
-    checkout scm
+    echo 'Initial application build info......'
+
+    env.MAVEN_IMAGE = "maven:3-jdk-8"
+    env.MAVEN_ARGS = "-v /root/.m2:/root/.m2"
+
+    env.SYSTEM_NAME = 'kyle'
+    env.APPLICATION_NAME = 'docker-jenkins'
+    env.APPLICATION_VERSION = '0.0.1-SNAPSHOT'
+    env.IMAGE_NAME = "${env.SYSTEM_NAME}/${env.APPLICATION_NAME}:" + (env.BRANCH_NAME == "master" ? "latest" : "alpine")
+    env.APPLICATION_PORT = (env.BRANCH_NAME == "master" ? "8000" : "8001")
   }
 
-  stage('Build') {
-    withDockerContainer("image" : MAVEN_IMAGE, "args" : MAVEN_ARGS) {
+  withDockerContainer("image" : env.MAVEN_IMAGE, "args" : env.MAVEN_ARGS) {
+    stage('Build') {
       sh('mvn -B -DskipTests clean package spring-boot:repackage')
+      archiveArtifacts(artifacts: 'target/*.jar', fingerprint: true)
     }
-  }
 
-  stage('Test') {
-    withDockerContainer("image" : MAVEN_IMAGE, "args" : MAVEN_ARGS) {
+    stage('Test') {
       try {
         sh('mvn test')
       } finally {
@@ -28,8 +28,17 @@ node {
       }
     }
   }
+
+  stage('Build docker image') {
+    docker.build(env.IMAGE_NAME)
+  }
+
+  stage('Run docker image') {
+    if (env.branchName == 'master' || env.branchName == 'develop') {
+      // -d: Run docker image in daemon
+      // --rm: Auto-remove docker container after stop
+      sh 'docker run -d --rm -p ' + env.APPLICATION_PORT + ':8080 ' + env.imageName
+    }
+  }
 }
 
-def init() {
-  buildInfo.put("branchName" : "${env.BRANCH_NAME}")
-}
