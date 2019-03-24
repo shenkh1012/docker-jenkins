@@ -7,7 +7,9 @@ def buildInfo = null
 node {
   stage('Init') {
     echo('Init')
+
     buildInfo = BuildInfo.instance
+    echo(buildInfo.branchName)
 
     checkout(scm)
   }
