@@ -33,5 +33,5 @@ node {
 }
 
 def init() {
-  buildInfo.branchName = "${env.BRANCH_NAME}"
+  (buildInfo.branchName = "${env.BRANCH_NAME}") as Object
 }
