@@ -2,9 +2,7 @@
 
 def MAVEN_IMAGE = "maven:3-jdk-8"
 def MAVEN_ARGS = "-v /root/.m2:/root/.m2"
-def buildInfo = [
-    "branchName" : "develop"
-]
+def buildInfo = ["branchName" : ""]
 
 node {
   stage('Init') {
@@ -33,5 +31,6 @@ node {
 }
 
 def init() {
-  buildInfo.put("branchName", "${env.BRANCH_NAME}")
+  def buildInfo = ${"buildInfo"}
+  buildInfo.put("branchName" : "develop")
 }
