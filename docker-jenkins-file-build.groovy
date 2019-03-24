@@ -3,15 +3,15 @@
 def MAVEN_IMAGE = "maven:3-jdk-8"
 def MAVEN_ARGS = "-v /root/.m2:/root/.m2"
 def buildInfo = [
-    "branchName" : ""
+    "branchName" : "develop"
 ]
 
 node {
   stage('Init') {
     echo('Init build info')
+    echo(buildInfo.branchName)
     init()
     echo(buildInfo.branchName)
-
     checkout scm
   }
 
