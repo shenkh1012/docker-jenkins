@@ -8,7 +8,7 @@ node {
   stage('Build') {
     checkout scm
 
-    withDockerContainer('image': 'maven:3-jdk-8') {
+    withDockerContainer('image': 'maven:3-jdk-8', 'args':'-v /root/.m2:/root/.m2') {
       sh 'mvn -B clean compile'
     }
   }
