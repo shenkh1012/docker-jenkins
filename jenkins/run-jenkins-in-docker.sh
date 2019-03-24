@@ -13,3 +13,13 @@ docker run \
 
 # Jenkins initial password in docker volumes
 cat /var/lib/docker/volumes/jenkins-data/_data/secrets/initialAdminPassword
+
+docker run \
+  -d \
+  --rm \
+  -u root \
+  -p 8080:8080 \
+  -v jenkins-data:/var/jenkins_home \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  -v "$HOME":/home \
+  jenkinsci/blueocean
