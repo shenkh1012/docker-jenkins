@@ -31,7 +31,7 @@ node {
 }
 
 class BuildInfo {
-  private static BuildInfo INSTANCE = new BuildInfo()
+  def INSTANCE = new BuildInfo()
 
   private String applicationName
   private String branchName
