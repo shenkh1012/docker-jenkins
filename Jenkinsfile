@@ -3,23 +3,25 @@
 pipeline {
   agent any
 
-  stage('Init') {
-    steps {
-      echo 'Init'
+  stages {
+    stage('Init') {
+      steps {
+        echo 'Init'
+      }
     }
-  }
 
-  stage('Build') {
-    agent mavenImage()
-    steps {
-      sh 'mvn -B clean compile'
+    stage('Build') {
+      agent mavenImage()
+      steps {
+        sh 'mvn -B clean compile'
+      }
     }
-  }
 
-  stage('Test') {
-    agent mavenImage()
-    steps {
-      sh 'mvn test'
+    stage('Test') {
+      agent mavenImage()
+      steps {
+        sh 'mvn test'
+      }
     }
   }
 }
