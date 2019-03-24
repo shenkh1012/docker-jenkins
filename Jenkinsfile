@@ -1,7 +1,9 @@
 #!groovy
 
 pipeline {
-  agent any
+  agent {
+    mavenImage
+  }
 
   stages {
     stage('Init') {
@@ -11,9 +13,7 @@ pipeline {
     }
 
     stage('Build') {
-      agent {
-        mavenImage()
-      }
+      agent mavenImage
       steps {
         sh 'mvn -B clean compile'
       }
@@ -28,9 +28,7 @@ pipeline {
   }
 }
 
-def mavenImage() {
-  return docker {
-    image("maven:3-jdk-8")
-    args("-v /root/.m2:/root/.m2")
-  }
+def mavenImage = docker {
+  image("maven:3-jdk-8")
+  args("-v /root/.m2:/root/.m2")
 }
