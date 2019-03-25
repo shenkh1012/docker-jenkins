@@ -41,6 +41,4 @@ node {
       sh('docker run -d --rm -p ' + env.APPLICATION_PORT + ':8080 ' + env.IMAGE_NAME)
     }
   }
-
 }
-
