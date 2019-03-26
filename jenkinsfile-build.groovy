@@ -2,6 +2,7 @@
 
 node {
   stage('init') {
+    checkout(scm)
     echo 'Initial project......'
   }
 
