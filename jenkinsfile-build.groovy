@@ -6,16 +6,28 @@ node {
     echo 'Initial project......'
   }
 
-  stage('Maven - build') {
-    echo 'Build project......'
-  }
+  withDockerContainer("image" : env.MAVEN_IMAGE, "args" : env.MAVEN_ARGS) {
+    stage('Maven - build') {
+      echo 'Build project......'
 
-  stage('Maven - test') {
-    echo 'Run tests......'
-  }
+      sh('mvn -B -DskipTests clean package')
+    }
 
-  stage('Maven - install') {
-    echo 'Install maven......'
+    stage('Maven - test') {
+      echo 'Run tests......'
+
+      try {
+        sh('mvn test')
+      } finally {
+        junit('target/surefire-reports/*.xml')
+      }
+    }
+
+    stage('Maven - install') {
+      echo 'Maven install'
+
+      sh('mvn install')
+    }
   }
 
   stage('Build docker image......') {
