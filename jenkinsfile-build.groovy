@@ -6,11 +6,12 @@ node {
     echo 'Initial project......'
   }
 
-  withDockerContainer("image" : env.MAVEN_IMAGE, "args" : env.MAVEN_ARGS) {
+  withDockerContainer("image" : "maven:3-jdk-8", "args" : "-v /root/.m2:/root/.m2") {
     stage('Maven - build') {
       echo 'Build project......'
 
       sh('mvn -B -DskipTests clean package')
+      archiveArtifacts(artifacts: 'target/*.jar', fingerprint: true)
     }
 
     stage('Maven - test') {
