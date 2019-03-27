@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 public class ApplicationInfo {
   @Value("docker-jenkins")
   private String name;
-  @Value("Test CI/CD with jenkins")
+  @Value("Test CI/CD with jenkins.")
   private String description;
   @Value("0.0.1-SNAPSHOT")
   private String version;

@@ -1,5 +1,6 @@
 package com.shenkh.dj.controller;
 
+import com.shenkh.dj.ApplicationInfo;
 import org.json.JSONObject;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,12 +14,11 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @SpringBootTest
 @DisplayName("Home Controller tests")
 public class HomeControllerTest {
-  private static final String APPLICATION_NAME = "docker-jenkins";
-  private static final String APPLICATION_DESCRIPTION = "Test CI/CD with jenkins";
-  private static final String APPLICATION_VERSION = "0.0.1-SNAPSHOT";
-
   @Autowired
   private HomeController controller;
+
+  @Autowired
+  private ApplicationInfo applicationInfo;
 
   @Test
   void testHome() {
@@ -35,8 +35,8 @@ public class HomeControllerTest {
     assertNotNull(responseBody);
 
     JSONObject jsonObject = new JSONObject(responseEntity.getBody());
-    assertEquals(APPLICATION_NAME, jsonObject.get("name"));
-    assertEquals(APPLICATION_DESCRIPTION, jsonObject.get("description"));
-    assertEquals(APPLICATION_VERSION, jsonObject.get("version"));
+    assertEquals(applicationInfo.getName(), jsonObject.get("name"));
+    assertEquals(applicationInfo.getDescription(), jsonObject.get("description"));
+    assertEquals(applicationInfo.getVersion(), jsonObject.get("version"));
   }
 }
