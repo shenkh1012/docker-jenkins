@@ -58,7 +58,7 @@ node {
       if (branch("master") || branch("develop")) {
         sh 'Run docker image......'
 
-        sh "docker run --rm -p ${APPLICATION_PORT}:8080 ${IMAGE_NAME}"
+        sh "docker run --rm -p ${env.APPLICATION_PORT}:8080 ${env.IMAGE_NAME}"
       }
     }
   }
