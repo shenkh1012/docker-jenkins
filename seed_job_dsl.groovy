@@ -1,9 +1,9 @@
 #!groovy
 
-folder("${APP_NAME}") {
+folder("${FOLDER_NAME}") {
 }
 
-multibranchPipelineJob("${APP_NAME}/build") {
+multibranchPipelineJob("${FOLDER_NAME}/build") {
   branchSources {
     git {
       remote("${APP_GIT_URL}")
@@ -18,7 +18,7 @@ multibranchPipelineJob("${APP_NAME}/build") {
   }
 }
 
-job("${APP_NAME}/qa-promote") {
+job("${FOLDER_NAME}/qa-promote") {
   properties{
     promotions {
       promotion {
@@ -32,7 +32,7 @@ job("${APP_NAME}/qa-promote") {
         }
         actions {
           downstreamParameterized {
-            trigger("${APP_NAME}/qa-deploy") {
+            trigger("${FOLDER_NAME}/qa-deploy") {
               block {
                 buildStepFailure('FAILURE')
                 failure('FAILURE')
@@ -46,13 +46,13 @@ job("${APP_NAME}/qa-promote") {
   }
 }
 
-job("${APP_NAME}/qa-deploy") {
+job("${FOLDER_NAME}/qa-deploy") {
   steps {
     shell('echo "QA deploy"')
   }
 }
 
-deliveryPipelineView("${APP_NAME}/qa-promote-view") {
+deliveryPipelineView("${FOLDER_NAME}/qa-promote-view") {
   allowPipelineStart(true)
   columns(2)
   enableManualTriggers(true)
