@@ -3,18 +3,16 @@
 folder("${APP_NAME}") {
 }
 
-pipelineJob("${APP_NAME}/build") {
-  definition{
-    cpsScm {
-      scm {
-        git {
-          branch("develop")
-          remote {
-            credentials("${APP_GIT_USER_ID}")
-            url("${APP_GIT_URL}")
-          }
-        }
-      }
+multibranchPipelineJob("${APP_NAME}/build") {
+  branchSources {
+    git {
+      remote("${APP_GIT_URL}")
+      credentialsId("${APP_GIT_USER_ID}")
+    }
+  }
+
+  factory {
+    workflowBranchProjectFactory {
       scriptPath("Jenkinsfile_docker_build.groovy")
     }
   }
@@ -54,20 +52,20 @@ job("${APP_NAME}/qa-deploy") {
   }
 }
 
-deliveryPipelineView("${APP_NAME}/qa-deploy-view") {
-  allowPipelineStart(true)
-  columns(2)
-  enableManualTriggers(true)
-  linkToConsoleLog(true)
-  pipelineInstances(5)
-  showAggregatedPipeline(true)
-  showAvatars(true)
-  showChangeLog(true)
-  showPromotions(true)
-  showTestResults(true)
-  sorting(Sorting.TITLE)
-  updateInterval(60)
-  pipelines {
-    component("${APP_NAME}", "${APP_NAME}/build")
-  }
-}
+//deliveryPipelineView("${APP_NAME}/qa-deploy-view") {
+//  allowPipelineStart(true)
+//  columns(2)
+//  enableManualTriggers(true)
+//  linkToConsoleLog(true)
+//  pipelineInstances(5)
+//  showAggregatedPipeline(true)
+//  showAvatars(true)
+//  showChangeLog(true)
+//  showPromotions(true)
+//  showTestResults(true)
+//  sorting(Sorting.TITLE)
+//  updateInterval(60)
+//  pipelines {
+//    component("${APP_NAME}", "${APP_NAME}/build")
+//  }
+//}
