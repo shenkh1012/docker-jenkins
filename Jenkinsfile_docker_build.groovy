@@ -17,6 +17,17 @@ node {
       sh 'mvn -B -DskipTests clean package'
       archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
     }
+
+    stage('Test') {
+      echo 'Run tests......'
+
+      try {
+        // Run tests with maven.
+        sh 'mvn test'
+      } finally {
+        junit 'target/surefire-reports/TEST-*.xml'
+      }
+    }
   }
 
 //  withDockerContainer("image" : "maven3.6.0-jdk-8", "args" : "-v /root/.m2:/root/.m2") {
