@@ -9,7 +9,7 @@ node {
     init()
   }
 
-  withDockerContainer("image" : "maven:3.6.0-jdk-8", "args" : "-v /root/.m2:/root/.m2") {
+  withDockerContainer("image": "maven:3.6.0-jdk-8", "args": "-v /root/.m2:/root/.m2") {
     stage('Build') {
       echo 'Build project ......'
 
@@ -29,12 +29,28 @@ node {
       }
     }
 
-    if (env.BRANCH_NAME == "master") {
+    if (env.BRANCH_NAME == "master" || env.BRANCH_NAME == "develop") {
       stage('Install') {
 
         echo 'Install maven project......'
 
         sh 'mvn -DskipTests install'
+      }
+    }
+  }
+
+  if (env.BRANCH_NAME == "master" || env.BRANCH_NAME == "develop") {
+    stage("Build-docker-image") {
+      if (branch("master") || branch("develop")) {
+        echo 'Build docker image......'
+
+        sh 'docker info'
+
+        stopContainerIfExists()
+
+        docker.build(env.imageName)
+
+        removeDanglingImages()
       }
     }
   }
@@ -106,25 +122,25 @@ def init() {
   env.APPLICATION_PORT = (env.BRANCH_NAME == "master" ? "8000" : "8001")
 }
 
-//def stopContainerIfExists() {
-//  // Get container id of the current running container
-//  def containerId = sh(returnStdout: true, script: "docker ps | grep '${IMAGE_NAME}' | awk '{print \$1;}'")
-//  echo 'Running containerId=' + containerId
-//
-//  if (containerId.trim()) {
-//    // Stop container
-//    sh 'docker stop ' + containerId
-//
-//    // Wait for stop
-//    sleep time: 5, unit: 'SECONDS'
-//  }
-//}
-//
-//def removeDanglingImages() {
-//  try {
-//    // Clean up dangling images (<none>:<none> images).
-//    sh 'docker rmi $(docker images -f "dangling=true" -q)'
-//  } catch (ignore) {
-//    // That's fine.
-//  }
-//}
+def stopContainerIfExists() {
+  // Get container id of the current running container
+  def containerId = sh(returnStdout: true, script: "docker ps | grep '${IMAGE_NAME}' | awk '{print \$1;}'")
+  echo 'Running containerId=' + containerId
+
+  if (containerId.trim()) {
+    // Stop container
+    sh 'docker stop ' + containerId
+
+    // Wait for stop
+    sleep time: 5, unit: 'SECONDS'
+  }
+}
+
+def removeDanglingImages() {
+  try {
+    // Clean up dangling images (<none>:<none> images).
+    sh 'docker rmi $(docker images -f "dangling=true" -q)'
+  } catch (ignore) {
+    // That's fine.
+  }
+}
