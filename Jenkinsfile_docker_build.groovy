@@ -9,10 +9,12 @@ node {
     init()
   }
 
-  stage('Build') {
-    echo 'Build......'
+  withDockerContainer("image" : "maven3.6.0-jdk-8", "args" : "-v /root/.m2:/root/.m2") {
+    stage('Build') {
+      echo 'Build......'
 
-    checkout(scm)
+      checkout(scm)
+    }
   }
 
 //  withDockerContainer("image" : "maven3.6.0-jdk-8", "args" : "-v /root/.m2:/root/.m2") {
