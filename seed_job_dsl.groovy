@@ -52,20 +52,20 @@ job("${APP_NAME}/qa-deploy") {
   }
 }
 
-//deliveryPipelineView("${APP_NAME}/qa-deploy-view") {
-//  allowPipelineStart(true)
-//  columns(2)
-//  enableManualTriggers(true)
-//  linkToConsoleLog(true)
-//  pipelineInstances(5)
-//  showAggregatedPipeline(true)
-//  showAvatars(true)
-//  showChangeLog(true)
-//  showPromotions(true)
-//  showTestResults(true)
-//  sorting(Sorting.TITLE)
-//  updateInterval(60)
-//  pipelines {
-//    component("${APP_NAME}", "${APP_NAME}/build")
-//  }
-//}
+deliveryPipelineView("${APP_NAME}/qa-promote-view") {
+  allowPipelineStart(true)
+  columns(2)
+  enableManualTriggers(true)
+  linkToConsoleLog(true)
+  pipelineInstances(5)
+  showAggregatedPipeline(true)
+  showAvatars(true)
+  showChangeLog(true)
+  showPromotions(true)
+  showTestResults(true)
+  sorting(Sorting.TITLE)
+  updateInterval(60)
+  pipelines {
+    component("${APP_NAME}", "${APP_NAME}/qa-promote")
+  }
+}
