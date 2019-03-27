@@ -14,8 +14,8 @@ job ("seed-job") {
     git {
       branch("develop")
       remote {
-        credentials("${APP_GIT_USER_ID}")
-        url("${APP_GIT_URL}")
+        credentials("${gitUserId}")
+        url("${gitUrl}")
       }
     }
   }
