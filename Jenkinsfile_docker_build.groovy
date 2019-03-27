@@ -29,8 +29,9 @@ node {
       }
     }
 
-    stage('Install') {
-      if (env.BRANCH_NAME == "master") {
+    if (env.BRANCH_NAME == "master") {
+      stage('Install') {
+
         echo 'Install maven project......'
 
         sh 'mvn -DskipTests install'
