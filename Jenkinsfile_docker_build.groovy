@@ -2,7 +2,7 @@
 
 node {
   stage('Init') {
-    echo 'Init pipeline......'
+    echo 'Init pipeline ......'
 
     checkout(scm)
 
@@ -11,7 +11,11 @@ node {
 
   withDockerContainer("image" : "maven:3.6.0-jdk-8", "args" : "-v /root/.m2:/root/.m2") {
     stage('Build') {
-      echo 'Build......'
+      echo 'Build project ......'
+
+      // Build application with maven
+      sh 'mvn -B -DskipTests clean package'
+      archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
     }
   }
 
