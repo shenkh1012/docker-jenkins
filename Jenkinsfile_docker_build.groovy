@@ -58,9 +58,7 @@ node {
       if (branch("master") || branch("develop")) {
         sh 'Run docker image......'
 
-        echo("docker run -d --rm -p ${APPLICATION_PORT}:8080 ${IMAGE_NAME}")
-
-        sh "docker run -d --rm -p ${APPLICATION_PORT}:8080 ${IMAGE_NAME}"
+        runDockerImage()
       }
     }
   }
@@ -105,4 +103,8 @@ def removeDanglingImages() {
   } catch (ignore) {
     // That's fine.
   }
+}
+
+def runDockerImage() {
+  sh "docker run -d --rm -p ${env.APPLICATION_PORT}:8080 ${env.IMAGE_NAME}"
 }
