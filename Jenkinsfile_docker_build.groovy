@@ -28,6 +28,14 @@ node {
         junit 'target/surefire-reports/TEST-*.xml'
       }
     }
+
+    stage('Install') {
+      if (branch("master")) {
+        echo 'Install maven project......'
+
+        sh 'mvn -DskipTests install'
+      }
+    }
   }
 
 //  withDockerContainer("image" : "maven3.6.0-jdk-8", "args" : "-v /root/.m2:/root/.m2") {
