@@ -19,7 +19,7 @@ node {
     }
 
     stage('Test') {
-      echo 'Run tests......'
+      echo 'Run tests ......'
 
       try {
         // Run tests with maven.
@@ -31,8 +31,7 @@ node {
 
     if (env.BRANCH_NAME == "master" || env.BRANCH_NAME == "develop") {
       stage('Install') {
-
-        echo 'Install maven project......'
+        echo 'Install maven project ......'
 
         sh 'mvn -DskipTests install'
       }
@@ -42,7 +41,7 @@ node {
   if (env.BRANCH_NAME == "master" || env.BRANCH_NAME == "develop") {
     stage("Build-docker-image") {
       if (branch("master") || branch("develop")) {
-        echo 'Build docker image......'
+        echo 'Build docker image ......'
 
         sh 'docker info'
 
@@ -56,10 +55,18 @@ node {
 
     stage("Run-docker-image") {
       if (branch("master") || branch("develop")) {
-        echo 'Run docker image......'
+        echo 'Run docker image ......'
 
         sh "docker run -d --rm -p ${APPLICATION_PORT}:8080 ${IMAGE_NAME}"
       }
+    }
+  }
+
+  if (env.BRANCH_NAME == "develop") {
+    stage("QA-promote") {
+      echo 'QA promote ......'
+
+      build(job: "${APPLICAITON_NAME}/qa-promote", wait: false)
     }
   }
 
