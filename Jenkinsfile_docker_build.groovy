@@ -5,14 +5,14 @@ node {
     echo 'Init pipeline......'
 
     checkout(scm)
+
+    init()
   }
 
   stage('Build') {
     echo 'Build......'
 
     checkout(scm)
-
-    init()
   }
 
 //  withDockerContainer("image" : "maven3.6.0-jdk-8", "args" : "-v /root/.m2:/root/.m2") {
@@ -75,13 +75,13 @@ node {
 //  }
 }
 
-//def init() {
-//  env.APPLICAITON_NAME = 'ks-jenkins-docker'
-//  env.SYSTEM_NAME = 'dti-ddp'
-//  env.IMAGE_NAME = "${env.SYSTEM_NAME}/${env.APPLICAITON_NAME}:" + (env.BRANCH_NAME == "master" ? "latest" : "alpine")
-//  env.APPLICATION_PORT = (env.BRANCH_NAME == "master" ? "8000" : "8001")
-//}
-//
+def init() {
+  env.APPLICAITON_NAME = 'ks-jenkins-docker'
+  env.SYSTEM_NAME = 'dti-ddp'
+  env.IMAGE_NAME = "${env.SYSTEM_NAME}/${env.APPLICAITON_NAME}:" + (env.BRANCH_NAME == "master" ? "latest" : "alpine")
+  env.APPLICATION_PORT = (env.BRANCH_NAME == "master" ? "8000" : "8001")
+}
+
 //def stopContainerIfExists() {
 //  // Get container id of the current running container
 //  def containerId = sh(returnStdout: true, script: "docker ps | grep '${IMAGE_NAME}' | awk '{print \$1;}'")
