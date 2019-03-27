@@ -5,8 +5,6 @@ node {
     echo 'Init pipeline......'
 
     checkout(scm)
-
-    init()
   }
 
   stage('Build') {
