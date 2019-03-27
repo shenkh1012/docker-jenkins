@@ -48,9 +48,17 @@ node {
 
         stopContainerIfExists()
 
-        docker.build(env.imageName)
+        docker.build(env.IMAGE_NAME)
 
         removeDanglingImages()
+      }
+    }
+
+    stage("Run-docker-image") {
+      if (branch("master") || branch("develop")) {
+        sh 'Run docker image......'
+
+        sh "docker run -d --rm -p ${APPLICATION_PORT}:8080 ${IMAGE_NAME}"
       }
     }
   }
