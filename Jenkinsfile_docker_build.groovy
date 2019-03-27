@@ -63,7 +63,7 @@ node {
       try {
         echo "QA promote..."
       } finally {
-        downstream(projectName: "ks-jenkins-docker/qa-deploy", thresholdName: 'SUCCESS')
+        downstream(projectName: "docker-jenkins/qa-promote", thresholdName: 'SUCCESS')
       }
     }
   }
