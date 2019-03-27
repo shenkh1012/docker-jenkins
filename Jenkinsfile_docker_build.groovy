@@ -69,17 +69,6 @@ node {
       build(job: "${APPLICAITON_NAME}/qa-promote", wait: false)
     }
   }
-
-//
-//  stage("QA-promote") {
-//    if (branch("develop")) {
-//      try {
-//        echo "QA promote..."
-//      } finally {
-//        downstream(projectName: "docker-jenkins/qa-promote", thresholdName: 'SUCCESS')
-//      }
-//    }
-//  }
 }
 
 def init() {
