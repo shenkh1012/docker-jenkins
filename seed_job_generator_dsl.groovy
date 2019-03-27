@@ -1,7 +1,7 @@
 #!groovy
 def folderName = "docker-jenkins"
 def gitUrl = "https://github.com/shenkh1012/docker-jenkins.git"
-def gitUserId = "a2a87c7c-e0e2-45dc-bb1e-3a0bc4bb401a"
+def gitUserId = "233bddb3-bd9c-46cc-9861-8e0ee8ae9f5b"
 
 job ("seed-job") {
   parameters {
