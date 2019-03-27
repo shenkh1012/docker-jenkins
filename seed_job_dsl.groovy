@@ -66,6 +66,6 @@ deliveryPipelineView("${FOLDER_NAME}/qa-promote-view") {
   sorting(Sorting.TITLE)
   updateInterval(60)
   pipelines {
-    component("${APP_NAME}", "${APP_NAME}/qa-promote")
+    component("${FOLDER_NAME}", "${FOLDER_NAME}/qa-promote")
   }
 }
