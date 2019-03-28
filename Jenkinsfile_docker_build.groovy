@@ -62,13 +62,13 @@ node {
     }
   }
 
-  if (env.BRANCH_NAME == "develop") {
-    stage("QA-promote") {
-      echo 'QA promote ......'
-
-      build(job: "${APPLICAITON_NAME}/qa-promote", wait: false)
-    }
-  }
+//  if (env.BRANCH_NAME == "develop") {
+//    stage("QA-promote") {
+//      echo 'QA promote ......'
+//
+//      build(job: "${APPLICAITON_NAME}/qa-promote", wait: false)
+//    }
+//  }
 }
 
 def init() {
